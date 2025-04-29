@@ -1,0 +1,1 @@
+document.getElementById('captcha').innerText = '2 + 2 = ?';
