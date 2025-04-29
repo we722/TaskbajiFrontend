@@ -1,16 +1,53 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Task Page</title>
-    <script src="script.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Page - Taskbaji</title>
 </head>
 <body>
-    <h1>Task Page</h1>
-    <div id="captcha"></div>
-    <input type="text" id="answer" placeholder="Enter answer" />
-    <button onclick="submitCaptcha()">Submit</button>
-    <p id="result"></p>
+  <h1>Task Page</h1>
+  <div id="questionBox"></div>
+  <input type="text" id="answerInput" placeholder="Enter answer" />
+  <button onclick="submitAnswer()">Submit</button>
+  <p id="responseMsg"></p>
+
+  <script>
+    const backendUrl = 'https://taskbajibackend.onrender.com';
+
+    function loadQuestion() {
+      fetch(`${backendUrl}/api/get-question`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('questionBox').innerText = data.question;
+        })
+        .catch(err => {
+          document.getElementById('questionBox').innerText = 'Error loading question.';
+        });
+    }
+
+    function submitAnswer() {
+      const answer = document.getElementById('answerInput').value;
+
+      fetch(`${backendUrl}/api/submit-answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ answer })
+      })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('responseMsg').innerText = data.message;
+          loadQuestion(); // Load next question after submit
+        })
+        .catch(err => {
+          document.getElementById('responseMsg').innerText = 'Submission failed.';
+        });
+    }
+
+    // Load first question on page load
+    window.onload = loadQuestion;
+  </script>
 </body>
 </html>
